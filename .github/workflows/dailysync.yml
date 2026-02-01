@@ -1,0 +1,22 @@
+name: Daily Pinecone Data Sync
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight
+  workflow_dispatch: # Allows to run it manually for testing
+
+jobs:
+  update-pinecone:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install pinecone-client openai # and any other libs
+      - name: Run update script
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python scripts/update_vector_db.py
